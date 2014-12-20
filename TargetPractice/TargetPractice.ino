@@ -1,10 +1,11 @@
 #include <MeggyJrSimple.h>
-
+boolean gameOver = false;
 void setup()
 {
   MeggyJrSimpleSetup();
   drawCities();
   drawTargeter();
+  Serial.begin(9600); //this code keeps the dots on the screen
 }
 
 int xCoord=3;
@@ -13,23 +14,23 @@ int ctyDraw[8]={0,1,2,3,4,5,6,7};
 int ctyGone[8]={1,1,1,1,1,1,1,1}; 
 
 void loop()
-{  
-  if(Destroyed()==false)
-  {
-    moveTargeter();
-    drawTargeter();
-    drawCities();
-    Destroyed();
-    DisplaySlate();
-    delay(50);
-    ClearSlate();
-  }
-  if(Destroyed()==true)
+{
+  if (gameOver) //this means if it is true
   {
     ClearSlate();
     DisplaySlate();
     delay(3000);
   }
+  else
+  {
+    drawCities();
+    moveTargeter();//move targeter comes before draw because you want the targeter to mvoe on screen
+    drawTargeter();
+  }
+  gameOver = Destroyed();//set this so it only reads the boolean statement once
+  DisplaySlate();
+  delay(50);
+  ClearSlate();
 }
 void drawTargeter()
 {
@@ -38,6 +39,7 @@ void drawTargeter()
   DrawPx(xCoord,yCoord-1,5);
   DrawPx(xCoord,yCoord+1,5); 
 }
+
 boolean Destroyed()
 {
   for (int i = 0; i < 8; i++)
@@ -46,11 +48,8 @@ boolean Destroyed()
     {
       return false;
     }
-    if (ReadPx(i,0)==0)
-    {
-      return true;
-    }
   }
+  return true;
 }
 void drawCities()
 {
@@ -84,17 +83,17 @@ void moveTargeter()
   if(Button_Down)
   {
     yCoord=yCoord-1;
-    if(yCoord<0)
+    if(yCoord<1)
     {
-      yCoord=0;
+      yCoord=1;
     }
   }
   if(Button_Up)
   {
     yCoord=yCoord+1;
-    if(yCoord>7)
+    if(yCoord>6)
     {
-      yCoord=7;
+      yCoord=6;
     }
   }
 }
