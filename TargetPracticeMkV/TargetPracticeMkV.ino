@@ -25,6 +25,7 @@ int goEnemyTmr=0;
 int enemyStart=0;
 int EnemyDrop=0;
 int EnemyDropStart=0;
+int screenClear;
 
 
 void loop()
@@ -41,7 +42,7 @@ void loop()
     moveTargeter();//move targeter comes before draw because you want the targeter to mvoe on screen
     drawTargeter();
     drawEnemy();
-    if(millis()>30000)
+    if(millis()>50000)
     {
       for(int c=0; c<8; c++)
       {
@@ -138,13 +139,25 @@ void drawEnemy()
     {
       enemyY[enemyNum]=7;
       enemyX[enemyNum]=random(7);
-      if(enemyNum<10)
+      enemyNum++;
+      enemyStart=0;
+    }
+    else
+    {
+      for(int test=0; test<10; test++)//code to check if all dots are off screen
       {
-        enemyNum++;
+        if(enemyDestroyed[test]==0)
+        {
+          screenClear++;
+        }
       }
-      else
+      if(screenClear>10)
       {
-        enemyNum=100;
+        enemyNum=0;
+        for(int reset=0; reset<10; reset++)
+        {
+          enemyDestroyed[reset]=1;
+        }
       }
       enemyStart=0;
     }
@@ -179,6 +192,10 @@ void drawEnemy()
       DrawPx(enemyX[i], enemyY[i], Red);
     }
   }
+  /*if(DotTest)
+  {
+    
+  }*/
   /*for(int n=0; n<=numEnemy; n++)
   {
     if(createEnemy[n]<=numEnemy&&millis()-tmrTarget==goEnemy)
@@ -190,3 +207,18 @@ void drawEnemy()
     }
   }*/
 }
+/*boolean DotTest()
+{
+  for(int test=0; test<10; test++)//code to check if all dots are off screen
+  {
+    if(enemyDestroyed[test]==0)
+    {
+      screenClear++;
+    }
+  }
+  if(screenClear==10)
+  {
+    enemyNum=0;
+  }
+  
+}*/

@@ -25,6 +25,7 @@ int goEnemyTmr=0;
 int enemyStart=0;
 int EnemyDrop=0;
 int EnemyDropStart=0;
+int enemyCheck;
 
 
 void loop()
@@ -137,16 +138,32 @@ void drawEnemy()
     if(enemyNum<10)
     {
       enemyY[enemyNum]=7;
-      enemyX[enemyNum]=random(7);
-      if(enemyNum<10)
-      {
-        enemyNum++;
-      }
-      else
-      {
-        enemyNum=100;
-      }
+      enemyX[enemyNum]=random(0,7);
+      enemyNum++;
       enemyStart=0;
+    }
+    else
+    {
+      for(int u=0; u<10; u++)
+      {
+        if(enemyDestroyed[u]==0)
+        {
+          enemyCheck++;
+          delay(500);
+        }
+        else if(enemyCheck==10)
+        {
+          //delay(500);
+          DrawPx(1,1,Yellow);
+          enemyNum=0;
+          for(int reset=0; reset<10; reset++)
+          {
+            enemyDestroyed[reset]=1;
+          }
+          enemyStart=0;
+          EnemyDropStart=0;
+        }
+      }
     }
   }
   if(millis()-EnemyDrop>1000)

@@ -25,6 +25,8 @@ int goEnemyTmr=0;
 int enemyStart=0;
 int EnemyDrop=0;
 int EnemyDropStart=0;
+int screenClear=0;
+int screenClearWait=0;
 
 
 void loop()
@@ -56,10 +58,8 @@ void loop()
 }
 void drawTargeter()
 {
+  DrawPx(xCoord,yCoord,5);
   DrawPx(xCoord-1,yCoord,5);
-  DrawPx(xCoord+1,yCoord,5);
-  DrawPx(xCoord,yCoord-1,5);
-  DrawPx(xCoord,yCoord+1,5); 
 }
 
 boolean Destroyed()
@@ -137,7 +137,7 @@ void drawEnemy()
     if(enemyNum<10)
     {
       enemyY[enemyNum]=7;
-      enemyX[enemyNum]=random(7);
+      enemyX[enemyNum]=random(0,7);
       if(enemyNum<10)
       {
         enemyNum++;
@@ -148,11 +148,34 @@ void drawEnemy()
       }
       enemyStart=0;
     }
+    else
+    {
+      if(screenClear==0)
+      {
+        screenClearWait=millis();
+        screenClear=1;
+      }
+      if(millis()-screenClearWait>7000)
+      {
+        for(int reset=0; reset<10; reset++)
+        {
+          enemyDestroyed[reset]=1;
+        }
+        enemyNum=0;
+        enemyStart=0;
+        EnemyDropStart=0;
+        screenClear=0;
+      }
+    }
   }
   if(millis()-EnemyDrop>1000)
   {
      for(int i=0; i<enemyNum; i++)
     {
+      if(ReadPx(enemyX[i],enemyY[i]-1)==Blue)
+      {
+        enemyDestroyed[i]=0;
+      }
       if(ReadPx(enemyX[i],enemyY[i]-1)==Green)
       {
         ctyGone[enemyX[i]]=0;
@@ -166,7 +189,10 @@ void drawEnemy()
         }
         else
         {
-          enemyY[i]=enemyY[i]-1;
+          if(enemyDestroyed[i]==1)
+          {
+            enemyY[i]=enemyY[i]-1;
+          }
         }
       }
     }
