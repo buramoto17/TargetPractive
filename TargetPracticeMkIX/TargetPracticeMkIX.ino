@@ -17,12 +17,16 @@ int level=0;
 int numEnemy=3;
 int enemyX[10];
 int enemyY[10];//the ten means how many dots there can be
-int enemyNum[10];//
-int enemyDestroyed[10];
+int enemyNum=0;//
+int enemyDestroyed[10]={1,1,1,1,1,1,1,1,1,1};
 int tmrTarget=0;
 int goEnemy=0;
 int goEnemyTmr=0;
 int enemyStart=0;
+int EnemyDrop=0;
+int EnemyDropStart=0;
+int screenClear=0;
+int screenClearWait=0;
 
 
 void loop()
@@ -30,6 +34,12 @@ void loop()
   if (gameOver) //this means if it is true
   {
     ClearSlate();
+    DisplaySlate();
+    for(int i=0; i<8; i++)
+    {
+      DrawPx(7-i,7-i,Red);
+      DrawPx(0+i,0+i,Red);
+    }
     DisplaySlate();
     delay(3000);
   }
@@ -39,6 +49,16 @@ void loop()
     moveTargeter();//move targeter comes before draw because you want the targeter to mvoe on screen
     drawTargeter();
     drawEnemy();
+    if(millis()>30000)
+    {
+      ClearSlate();
+      for(int i=0; i<8; i++)
+      {
+        DrawPx(7-i,7-i,Green);
+        DrawPx(0+i,0+i,Green);
+      }
+      DisplaySlate();
+    }
   }
   gameOver = Destroyed();//set this so it only reads the boolean statement once
   DisplaySlate();
@@ -47,10 +67,17 @@ void loop()
 }
 void drawTargeter()
 {
-  DrawPx(xCoord-1,yCoord,5);
-  DrawPx(xCoord+1,yCoord,5);
-  DrawPx(xCoord,yCoord-1,5);
-  DrawPx(xCoord,yCoord+1,5); 
+  CheckButtonsDown();
+  if(Button_A)
+  {
+    DrawPx(xCoord,yCoord,Blue);
+    DrawPx(xCoord-1,yCoord,Blue);
+  }
+  else
+  {
+    DrawPx(xCoord,yCoord,Yellow);
+    DrawPx(xCoord-1,yCoord,Yellow);
+  }
 }
 
 boolean Destroyed()
@@ -116,9 +143,85 @@ void drawEnemy()
   {
     goEnemyTmr=millis();
     goEnemy=random(250,1000);
+    enemyStart=1;
+  }
+  if(EnemyDropStart==0)
+  {
+    EnemyDrop=millis();
+    EnemyDropStart++;
   }
   if(millis()-goEnemyTmr>goEnemy)
   {
+    if(enemyNum<10)
+    {
+      enemyY[enemyNum]=7;
+      enemyX[enemyNum]=random(0,8);
+      if(enemyNum<10)
+      {
+        enemyNum++;
+      }
+      else
+      {
+        enemyNum=100;
+      }
+      enemyStart=0;
+    }
+    else
+    {
+      if(screenClear==0)
+      {
+        screenClearWait=millis();
+        screenClear=1;
+      }
+      if(millis()-screenClearWait>7000)
+      {
+        for(int reset=0; reset<10; reset++)
+        {
+          enemyDestroyed[reset]=1;
+        }
+        enemyNum=0;
+        enemyStart=0;
+        EnemyDropStart=0;
+        screenClear=0;
+      }
+    }
+  }
+  if(millis()-EnemyDrop>1000)
+  {
+     for(int i=0; i<enemyNum; i++)
+    {
+      if(ReadPx(enemyX[i],enemyY[i]-1)==Blue)
+      {
+        enemyDestroyed[i]=0;
+      }
+      if(ReadPx(enemyX[i],enemyY[i]-1)==Green)
+      {
+        ctyGone[enemyX[i]]=0;
+        enemyDestroyed[i]=0;
+      }
+      else
+      {
+        if(enemyY[i]==0)
+        {
+          enemyDestroyed[i]=0;
+        }
+        else
+        {
+          if(enemyDestroyed[i]==1)
+          {
+            enemyY[i]=enemyY[i]-1;
+          }
+        }
+      }
+    }
+    EnemyDropStart=0;
+  }
+  for(int i=0; i<enemyNum; i++)
+  {
+    if(enemyDestroyed[i]==1)
+    {
+      DrawPx(enemyX[i], enemyY[i], Red);
+    }
   }
   /*for(int n=0; n<=numEnemy; n++)
   {
