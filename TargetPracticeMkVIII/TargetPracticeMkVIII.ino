@@ -1,11 +1,13 @@
  #include <MeggyJrSimple.h>
 boolean gameOver = false;
+int gameTimer=0;
 void setup()
 {
   MeggyJrSimpleSetup();
   drawCities();
   drawTargeter();
   Serial.begin(9600); //this code keeps the dots on the screen
+  gameTimer=millis();
 }
 
 int xCoord=3;
@@ -29,6 +31,7 @@ int screenClear=0;
 int screenClearWait=0;
 
 
+
 void loop()
 {
   if (gameOver) //this means if it is true
@@ -40,15 +43,16 @@ void loop()
   else
   {
     drawCities();
+    drawEnemy();
     moveTargeter();//move targeter comes before draw because you want the targeter to mvoe on screen
     drawTargeter();
-    drawEnemy();
-    if(millis()>30000)
+    if(gameTimer>30000)
     {
       for(int c=0; c<8; c++)
       {
         ctyGone[c]=0;
       }
+      gameTimer=millis();
     }
   }
   gameOver = Destroyed();//set this so it only reads the boolean statement once
@@ -58,8 +62,17 @@ void loop()
 }
 void drawTargeter()
 {
-  DrawPx(xCoord,yCoord,5);
-  DrawPx(xCoord-1,yCoord,5);
+  CheckButtonsDown();
+  if(Button_A)
+  {
+    //DrawPx(xCoord-1,yCoord,Blue);
+    DrawPx(xCoord,yCoord,Blue);
+  }
+  else
+  {
+    DrawPx(xCoord,yCoord,Yellow);
+    //WADrawPx(xCoord-1,yCoord,Yellow);
+  }
 }
 
 boolean Destroyed()
@@ -121,6 +134,13 @@ void moveTargeter()
 }
 void drawEnemy()
 {
+  for(int i=0; i<enemyNum; i++)
+    {
+    if(ReadPx(enemyX[i],enemyY[i])==Blue)
+    {
+      enemyDestroyed[i]=0;
+    }
+  }
   if(enemyStart==0)
   {
     goEnemyTmr=millis();
@@ -196,6 +216,7 @@ void drawEnemy()
         }
       }
     }
+
     EnemyDropStart=0;
   }
   for(int i=0; i<enemyNum; i++)

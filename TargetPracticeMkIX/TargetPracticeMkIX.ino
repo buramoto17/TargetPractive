@@ -37,7 +37,7 @@ void loop()
     DisplaySlate();
     for(int i=0; i<8; i++)
     {
-      DrawPx(7-i,7-i,Red);
+      DrawPx(7-i,7-i,Red);//creates a red slash on the screen, indicating loose
       DrawPx(0+i,0+i,Red);
     }
     DisplaySlate();
@@ -48,13 +48,13 @@ void loop()
     drawCities();
     moveTargeter();//move targeter comes before draw because you want the targeter to mvoe on screen
     drawTargeter();
-    drawEnemy();
-    if(millis()>30000)
-    {
+    drawEnemy();//want enemy to show up at front of screen
+    if(millis()>30000)//win code, turns game off after 30 seconds if at least
+    {//one city is alive
       ClearSlate();
       for(int i=0; i<8; i++)
       {
-        DrawPx(7-i,7-i,Green);
+        DrawPx(7-i,7-i,Green);//creates a green slash on the screen inducating win
         DrawPx(0+i,0+i,Green);
       }
       DisplaySlate();
@@ -68,7 +68,7 @@ void loop()
 void drawTargeter()
 {
   CheckButtonsDown();
-  if(Button_A)
+  if(Button_A)//player must hold down A button to activate sheild
   {
     DrawPx(xCoord,yCoord,Blue);
     DrawPx(xCoord-1,yCoord,Blue);
@@ -82,7 +82,7 @@ void drawTargeter()
 
 boolean Destroyed()
 {
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < 8; i++)//if all cities are gone, game over is true
   {
     if (ReadPx(i,0)>0)
     {
@@ -141,7 +141,7 @@ void drawEnemy()
 {
   if(enemyStart==0)
   {
-    goEnemyTmr=millis();
+    goEnemyTmr=millis();//this is so i can tell time from when preceeding enemy went
     goEnemy=random(250,1000);
     enemyStart=1;
   }
@@ -156,7 +156,7 @@ void drawEnemy()
     {
       enemyY[enemyNum]=7;
       enemyX[enemyNum]=random(0,8);
-      if(enemyNum<10)
+      if(enemyNum<10)//only showing 10 enemies at at time
       {
         enemyNum++;
       }
@@ -166,7 +166,7 @@ void drawEnemy()
       }
       enemyStart=0;
     }
-    else
+    else//this else statment makes sure all enemies are off-screen and resets them
     {
       if(screenClear==0)
       {
@@ -186,7 +186,7 @@ void drawEnemy()
       }
     }
   }
-  if(millis()-EnemyDrop>1000)
+  if(millis()-EnemyDrop>1000)//moving the enemies down, and detecting when it hits a city or the shield
   {
      for(int i=0; i<enemyNum; i++)
     {
@@ -216,7 +216,7 @@ void drawEnemy()
     }
     EnemyDropStart=0;
   }
-  for(int i=0; i<enemyNum; i++)
+  for(int i=0; i<enemyNum; i++)//this draws enemies, making sure they are not destroyed before it does
   {
     if(enemyDestroyed[i]==1)
     {
